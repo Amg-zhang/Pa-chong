@@ -58,30 +58,17 @@ const extractLinks = (html: string, baseUrl: string): string[] => {
 // 模拟爬虫服务，实际环境中应当使用服务端代理解决跨域问题
 export const crawlWebsite = async (request: CrawlRequest): Promise<CrawlResult> => {
   try {
-    // 模拟网络延迟
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // 使用相对路径，这样会自动调用Vercel的API路由
+    const apiUrl = '/api/crawl';
     
-    // 假设这是从目标网站获取的HTML内容
-    const mockHtml = `
-      <html>
-        <head>
-          <title>${request.url} - 网站标题</title>
-          <meta name="description" content="这是一个示例网站描述">
-        </head>
-        <body>
-          <h1>网站内容示例</h1>
-          <p>这是从 ${request.url} 爬取的示例内容。在实际应用中，需要后端服务支持。</p>
-          <img src="${request.url}/image1.jpg" alt="示例图片1">
-          <img src="${request.url}/image2.jpg" alt="示例图片2">
-          <div class="navigation">
-            <a href="${request.url}/page1">页面1</a>
-            <a href="${request.url}/page2">页面2</a>
-            <a href="${request.url}/about">关于我们</a>
-            <a href="https://example.com">外部链接</a>
-          </div>
-        </body>
-      </html>
-    `;
+    const response = await axios.post(apiUrl, request);
+    return response.data;
+  } catch (error) {
+    console.error('爬取失败:', error);
+    throw new Error('爬取网站内容失败');
+  }
+};
+
     
     // 提取链接
     const links = extractLinks(mockHtml, request.url);
